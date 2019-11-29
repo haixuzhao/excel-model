@@ -17,7 +17,8 @@
             <select name="templKey" id="templKey">
                 <option value="1">三方订单导入</option>
             </select>
-            <a href="javascript:void(0);" onclick="downloadTempl()" class="text-info"><i class="far fa-arrow-alt-circle-down"></i>点击下载模板</a>
+            <a href="javascript:void(0);" onclick="downloadTempl()" class="text-info"><i class="far fa-arrow-alt-circle-down"></i>下载模板</a>
+            <a href="javascript:void(0);" onclick="exportData()" class="text-info"><i class="far fa-arrow-alt-circle-down"></i>数据导出</a>
         </div>
         <div class="high-line-height">
             <div class="float-left">
@@ -25,7 +26,6 @@
             </div>
             <div class="float-left px-0 py-1">
                 <select name="toolCd" id="toolCd">
-                    <option value="">请选择</option>
                     <option value="10">apache-poi</option>
                     <option value="20">alibaba-easy</option>
                 </select>
@@ -153,13 +153,16 @@
 
 
     function downloadTempl(){
-        val = $("#templKey").val();
-        if(!!!val){
-            layer.msg("请选择模板",{icon : 2,time : 3000});
-            return false;
-        }
         try{
-            window.open("/data/import/downloadTempl.do?templNo="+val.split("_")[0]);
+            window.open("/excel/download");
+        }catch(e){
+            layer.msg("下载失败,请重试",{icon : 2,time : 3000});
+        }
+    }
+
+    function exportData(){
+        try{
+            window.open("/excel/export?toolCd="+$("#toolCd").val());
         }catch(e){
             layer.msg("下载失败,请重试",{icon : 2,time : 3000});
         }

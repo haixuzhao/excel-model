@@ -7,15 +7,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.UUID;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
+
+import com.alibaba.fastjson.JSON;
+import com.lanren.excelmodel.poi.DemoData;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -72,6 +73,27 @@ public class ExcelUtil {
 	public static enum Style {
 		DEF, BLUE
 	}
+
+
+	public static void exportExcel(SXSSFWorkbook workbook){
+		Sheet sheet = workbook.createSheet("sheet1");
+		Row row = sheet.createRow(0);
+		List<String> titles = WebUtil.getTitles();
+		for(int i = 0; i < titles.size();i++){
+			Cell cell = row.createCell(i);
+			cell.setCellValue(titles.get(i));
+		}
+		List<List<String>> datas = WebUtil.dataList();
+		for (int i = 0;i<datas.size();i++){
+			row = sheet.createRow(i+1);
+			List<String> data = datas.get(i);
+			for(int j = 0; j < data.size() ;j++){
+				Cell cell = row.createCell(j);
+				cell.setCellValue(data.get(j));
+			}
+		}
+	}
+
 
 	/**
 	 * @description 页面导出excel
@@ -262,13 +284,16 @@ public class ExcelUtil {
         HSSFWorkbook workbook = new HSSFWorkbook(in);
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             HSSFSheet sheet = workbook.getSheetAt(i);
+			if(sheet == null){
+				continue;
+			}
             int lastRowNum = sheet.getLastRowNum();
             for (int ii = startRowNum; ii <= lastRowNum; ii++) {
                 HSSFRow row = sheet.getRow(ii);
                 int lastCellNum = row.getLastCellNum();
                 List<Object> cellList = new ArrayList<>();
                 rowList.add(cellList);
-                for (int iii = 0; iii <= lastCellNum; iii++) {
+                for (int iii = 0; iii < lastCellNum; iii++) {
                     HSSFCell cell = row.getCell(iii);
                     addCellValue(cell, cellList);
                 }
@@ -283,13 +308,16 @@ public class ExcelUtil {
         XSSFWorkbook workbook = new XSSFWorkbook(in);
         for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
             XSSFSheet sheet = workbook.getSheetAt(i);
+            if(sheet == null){
+            	continue;
+			}
             int lastRowNum = sheet.getLastRowNum();
             for (int ii = startRowNum; ii <= lastRowNum; ii++) {
                 XSSFRow row = sheet.getRow(ii);
                 int lastCellNum = row.getLastCellNum();
                 List<Object> cellList = new ArrayList<>();
                 rowList.add(cellList);
-                for (int iii = 0; iii <= lastCellNum; iii++) {
+                for (int iii = 0; iii < lastCellNum; iii++) {
                     XSSFCell cell = row.getCell(iii);
                     addCellValue(cell, cellList);
                 }
@@ -321,20 +349,6 @@ public class ExcelUtil {
         default:
             cellList.add(cell.getStringCellValue());
             break;
-        }
-    }
-
-    public static void main(String[] args) {
-        File file = new File("d://发票单20190118.xls");
-        try {
-            List<List<Object>> dataList = readExcel(new FileInputStream(file), "xls", 4);
-            for (List<Object> list : dataList) {
-                System.out.println(list);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 }
