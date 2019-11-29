@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>导入</title>
+    <link rel="stylesheet" href="/layui/css/layui.css"  media="all">
+    <link rel="stylesheet" href="/css/all.css"  media="all">
+    <link href="/bootstrap4/dist/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+</head>
+<body class="container-fluid overflow-y-auto">
+<div class="row mx-auto" style="margin-top: 20px;">
+    <div class="col-12">
+        <div class="high-line-height">
+            1、<span style="color: red;">*</span>
+            <select name="templKey" id="templKey">
+                <option value="1">三方订单导入</option>
+            </select>
+            <a href="javascript:void(0);" onclick="downloadTempl()" class="text-info"><i class="far fa-arrow-alt-circle-down"></i>点击下载模板</a>
+        </div>
+        <div class="high-line-height">
+            <div class="float-left">
+                2、<span style="color: red;">*</span>工具：
+            </div>
+            <div class="float-left px-0 py-1">
+                <select name="toolCd" id="toolCd">
+                    <option value="">请选择</option>
+                    <option value="10">apache-poi</option>
+                    <option value="20">alibaba-easy</option>
+                </select>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="high-line-height">
+            <div class="float-left">
+                3、<span style="color: red;">*</span>名称：
+            </div>
+            <div class="float-left px-0 py-1">
+                <input type="text" placeholder="填写导入名称" name="imptNm" autocomplete="off" id="imptNm"
+                       class=" float-left  layui-input form-control">
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="high-line-height">
+            4、上传数据
+            <button class="layui-btn layui-btn-xs layui-btn-normal" id="fileList"><i class="fa fa-cloud-upload-alt"></i>请上传文件</button>
+            <span class="text-light-grey">只能上传excel文件</span>
+        </div>
+        <div class="card" style="display:none;">
+            <div class="card-body py-2" id="cloumnList">
+            </div>
+        </div>
+        <div class="high-line-height">
+            5、导入数据
+            <button class="layui-btn layui-btn-xs layui-btn-normal" id="fileListAction"><i class="fa fa-file-import fa-fw"></i>导入
+            </button>
+        </div>
+    </div>
+</div>
+<script src="/layui/layui.js" charset="utf-8"></script>
+<script src="/jquery/1.9.1/jquery.js" charset="utf-8"></script>
+<script ></script>
+<script>
+    $(function(){
+        layui.use('upload', function() {
+            var $ = layui.jquery,upload = layui.upload,layer = layui.layer;
+            //多文件列表示例
+            var cloumnListView = $('#cloumnList')
+                ,uploadListIns = upload.render({
+                elem: '#fileList'
+                ,url: '/excel/upload'
+                ,accept: 'file'
+                ,exts:'xls|xlsx'
+                ,multiple: false
+                ,number:1
+                ,auto: false
+                ,bindAction: '#fileListAction'
+                ,data:{
+                    templKey: function(){
+                        return $("#templKey").val();
+                    },
+                    toolCd: function(){
+                        return $("#toolCd").val();
+                    },
+                    imptNm: function(){
+                        return $("#imptNm").val();
+                    }
+                }
+                ,choose: function(obj){
+                    if(!!!$("#templKey").val()){
+                        layer.msg("请选择模板",{icon : 2,time : 3000});
+                        uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                        $("#fileListAction").removeClass("layui-btn-disabled");
+                        return false;
+                    }
+                    if(!!!$("#toolCd").val()){
+                        layer.msg("请选择工具",{icon : 2,time : 3000});
+                        uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                        $("#fileListAction").removeClass("layui-btn-disabled");
+                        return false;
+                    }
+                    if(!!!$("#imptNm").val()){
+                        layer.msg("请填写导入批次名称",{icon : 2,time : 3000});
+                        uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                        $("#fileListAction").removeClass("layui-btn-disabled");
+                        return false;
+                    }
+                    if($("#fileName").text()){
+                        $('.delete').click();
+                    }
+                    $(".card").css("display","block");
+                    var files = this.files = obj.pushFile(); //将每次选择的文件追加到文件队列
+                    //读取本地文件
+                    obj.preview(function(index, file, result){
+                        var p = $(['<p>' +
+                        '文件名：<span class="text-info" id="fileName">'+file.name+'</span>' +
+                        '<button class="layui-btn layui-btn-xs layui-btn-normal delete"  style="margin-left: 10px;"><i class="fa fa-close fa-fw"></i>删除</button>' +
+                        '</p>'].join(''));
+                        //删除
+                        p.find('.delete').on('click', function(){
+                            delete files[index]; //删除对应的文件
+                            $(".card").css("display","none");
+                            $("#cloumnList").empty();
+                            uploadListIns.config.elem.next()[0].value = ''; //清空 input file 值，以免删除后出现同名文件不可选
+                        });
+                        cloumnListView.append(p);
+                    });
+                }
+                ,before:function(obj){
+                    $("#fileListAction").addClass("layui-btn-disabled");
+                }
+                ,done: function(res, index, upload){
+                    msg = "";
+                    if(res.success){
+                        msg = "导入成功"+res.data;
+                    }else{
+                        msg = "导入失败";
+                    }
+                    $("#errorMsg").remove();
+                    var div = $(['<div id="errorMsg"><p class="text-danger">'+ msg +'</p></div>'].join(''));
+                    cloumnListView.append(div);
+                    $("#fileListAction").removeClass("layui-btn-disabled");
+                }
+                ,error: function(index, upload){
+                    var div = $(['<div id="errorMsg"><p style="margin-bottom: 5px;">错误：</p><p class="text-danger">未知错误</p></div>'].join(''));
+                    cloumnListView.append(div);
+                    $("#fileListAction").removeClass("layui-btn-disabled");
+                }
+            });
+        });
+    });
+
+
+    function downloadTempl(){
+        val = $("#templKey").val();
+        if(!!!val){
+            layer.msg("请选择模板",{icon : 2,time : 3000});
+            return false;
+        }
+        try{
+            window.open("/data/import/downloadTempl.do?templNo="+val.split("_")[0]);
+        }catch(e){
+            layer.msg("下载失败,请重试",{icon : 2,time : 3000});
+        }
+    }
+</script>
+</body>
+</html>
