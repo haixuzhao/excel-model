@@ -1,4 +1,4 @@
-package com.lanren.excelmodel.poi;
+package com.lanren.excelmodel.easyexcel;
 import com.alibaba.excel.annotation.ExcelProperty;
 
 import java.util.Date;

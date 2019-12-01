@@ -1,7 +1,7 @@
 package com.lanren.excelmodel.util;
 
 import com.alibaba.fastjson.JSONObject;
-import com.lanren.excelmodel.poi.DemoData;
+import com.lanren.excelmodel.easyexcel.DemoData;
 
 import java.util.ArrayList;
 import java.util.Date;

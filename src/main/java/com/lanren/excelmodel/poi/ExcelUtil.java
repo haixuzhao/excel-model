@@ -1,13 +1,9 @@
-package com.lanren.excelmodel.util;
+package com.lanren.excelmodel.poi;
 
 import java.awt.Color;
 import java.awt.geom.IllegalPathStateException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -15,8 +11,7 @@ import java.util.Map.Entry;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 
-import com.alibaba.fastjson.JSON;
-import com.lanren.excelmodel.poi.DemoData;
+import com.lanren.excelmodel.util.WebUtil;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;

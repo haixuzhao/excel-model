@@ -1,9 +1,11 @@
-package com.lanren.excelmodel.poi;
+package com.lanren.excelmodel.controller;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson.JSON;
+import com.lanren.excelmodel.easyexcel.DemoData;
+import com.lanren.excelmodel.easyexcel.DemoDataListener;
+import com.lanren.excelmodel.poi.ExcelUtil;
 import com.lanren.excelmodel.util.ErrCdEnum;
-import com.lanren.excelmodel.util.ExcelUtil;
 import com.lanren.excelmodel.util.TestFileUtil;
 import com.lanren.excelmodel.util.WebUtil;
 import org.apache.poi.util.IOUtils;
@@ -12,12 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.util.WebUtils;
+
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
@@ -28,10 +29,9 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
- * @ClassName POIExcelController
+ * @ClassName ExcelController
  * @Description: TODO
  * @Author zhx
  * @Date 2019/11/28
@@ -39,9 +39,9 @@ import java.util.UUID;
  **/
 @Controller
 @RequestMapping("excel/*")
-public class POIExcelController {
+public class ExcelController {
     //定义一个全局的记录器，通过LoggerFactory获取
-    private final static Logger logger = LoggerFactory.getLogger(POIExcelController.class);
+    private final static Logger logger = LoggerFactory.getLogger(ExcelController.class);
 
     @RequestMapping("index")
     public String toIndexView(Model model){
